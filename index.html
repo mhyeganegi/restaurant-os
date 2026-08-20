@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RestaurantOS</title>
+
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+
+        <div class="app-layout">
+
+            <aside class="sidebar">
+                <h1>RestaurantOS</h1>
+
+                <nav>
+                    <a href="#">Dashboard</a>
+                    <a href="#">Speisekarte</a>
+                    <a href="#">Bestellungen</a>
+                    <a href="#">Reservierungen</a>
+                    <a href="#">Tische</a>
+                    <a href="#">Mitarbeiter</a>
+                </nav>
+            </aside>
+
+            <div class="content">
+
+                <header class="topbar">
+
+                    <div>
+                        <h2>Dashboard</h2>
+                        <p id="current-date"></p>
+                    </div>
+
+                    <div class="topbar-user">
+                        <span>Restaurant Demo</span>
+                        <strong>Admin</strong>
+                    </div>
+
+                </header>
+                <main>
+                    <section>
+                        <p>Willkommen bei RestaurantOS.</p>
+
+                        <div class="dashboard-grid">
+                            <div class="card">
+                                <h3>Heute Umsatz</h3>
+                                <p id="today-revenue">0,00 €</p>
+                            </div>
+                            <div class="card">
+                                <h3>Offene Bestellungen</h3>
+                                <p id="open-orders">0</p>
+                            </div>
+                            <div class="card">
+                                <h3>Reservierungen</h3>
+                                <p id="reservations">0</p>
+                            </div>
+                            <div class="card">
+                                <h3>Freie Tische</h3>
+                                <p id="free-tables">0</p>
+                            </div>
+                        </div>
+
+                        <button>Neue Bestellung</button>
+                    </section>
+
+                    <section class="menu-section">
+
+                        <div class="section-header">
+                            <div>
+                                <h2>Speisekarte</h2>
+                                <p>Gerichte und Getränke verwalten</p>
+                            </div>
+                        </div>
+
+                        <form id="dish-form">
+
+                            <div class="form-group">
+                                <label for="dish-name">Name</label>
+                                <input
+                                    type="text"
+                                    id="dish-name"
+                                    placeholder="z. B. Pizza Margherita"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dish-price">Preis</label>
+                                <input
+                                    type="number"
+                                    id="dish-price"
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="12.90"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dish-category">Kategorie</label>
+
+                                <select id="dish-category" required>
+                                    <option value="">Kategorie wählen</option>
+                                    <option value="Vorspeise">Vorspeise</option>
+                                    <option value="Hauptgericht">Hauptgericht</option>
+                                    <option value="Dessert">Dessert</option>
+                                    <option value="Getränk">Getränk</option>
+                                </select>
+                            </div>
+
+                            <button type="submit">
+                                Gericht hinzufügen
+                            </button>
+
+                        </form>
+
+                        <div id="dish-list" class="dish-list"></div>
+
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <script src="app.js"></script>
+    </body>
+</html>
