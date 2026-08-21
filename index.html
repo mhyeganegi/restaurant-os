@@ -308,13 +308,110 @@
                 </section>
 
                 <section id="reservations-view" class="view hidden">
-                    <h2>Reservierungen</h2>
-                    <p>Reservierungen werden hier verwaltet.</p>
+
+                    <div class="section-header">
+                        <div>
+                            <h2>Reservierungen</h2>
+                            <p>Gästereservierungen verwalten</p>
+                        </div>
+                    </div>
+
+
+                    <form id="reservation-form">
+
+                        <div class="form-group">
+                            <label for="reservation-name">
+                                Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="reservation-name"
+                                placeholder="Max Mustermann"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="reservation-phone">
+                                Telefon
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="reservation-phone"
+                                placeholder="01761234567"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="reservation-date">
+                                Datum
+                            </label>
+
+                            <input
+                                type="date"
+                                id="reservation-date"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="reservation-time">
+                                Uhrzeit
+                            </label>
+
+                            <input
+                                type="time"
+                                id="reservation-time"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="reservation-guests">
+                                Personen
+                            </label>
+
+                            <input
+                                type="number"
+                                id="reservation-guests"
+                                min="1"
+                                value="2"
+                                required
+                            >
+                        </div>
+
+
+                        <button type="submit">
+                            Reservierung hinzufügen
+                        </button>
+
+                    </form>
+
+
+                    <div id="reservation-list"></div>
+
                 </section>
 
                 <section id="tables-view" class="view hidden">
-                    <h2>Tische</h2>
-                    <p>Tische werden hier verwaltet.</p>
+
+                    <div class="section-header">
+                        <div>
+                            <h2>Tische</h2>
+                            <p>Tischverwaltung</p>
+                        </div>
+                    </div>
+
+
+                    <div id="table-list" class="table-list"></div>
+
+
                 </section>
 
                 <section id="employees-view" class="view hidden">
