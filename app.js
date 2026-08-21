@@ -1,3 +1,7 @@
+// ======================================================
+// Datum
+// ======================================================
+
 const currentDate = document.getElementById("current-date");
 const today = new Date();
 
@@ -8,43 +12,76 @@ currentDate.textContent = today.toLocaleDateString("de-DE", {
     day: "numeric"
 });
 
-const dashboardData = {
-    todayRevenue: 1250.00,
-    openOrders: 25,
-    reservations: 12,
-    freeTables: 6
-};
 
-function updateDashboard() {
-    const revenueElement = document.getElementById("today-revenue");
-    const ordersElement = document.getElementById("open-orders");
-    const reservationsElement = document.getElementById("reservations");
-    const tablesElement = document.getElementById("free-tables");
-
-    revenueElement.textContent = dashboardData.todayRevenue.toLocaleString("de-DE", {
-        style: "currency",
-        currency: "EUR"
-    });
-
-    ordersElement.textContent = dashboardData.openOrders;
-    reservationsElement.textContent = dashboardData.reservations;
-    tablesElement.textContent = dashboardData.freeTables;
-}
-
-updateDashboard();
+// ======================================================
+// DOM-Elemente
+// ======================================================
 
 const dishForm = document.getElementById("dish-form");
 const dishNameInput = document.getElementById("dish-name");
 const dishPriceInput = document.getElementById("dish-price");
 const dishCategoryInput = document.getElementById("dish-category");
+
 const dishList = document.getElementById("dish-list");
+
 const dishSearchInput = document.getElementById("dish-search");
 const categoryFilter = document.getElementById("category-filter");
 const statusFilter = document.getElementById("status-filter");
 const sortDishes = document.getElementById("sort-dishes");
 
+
+// ======================================================
+// Daten
+// ======================================================
+
 let dishes = JSON.parse(localStorage.getItem("dishes")) || [];
 let editingDishId = null;
+
+
+// ======================================================
+// Dashboard
+// ======================================================
+
+function updateDashboard() {
+    const totalDishesElement = document.getElementById("total-dishes");
+    const availableDishesElement = document.getElementById("available-dishes");
+    const soldOutDishesElement = document.getElementById("sold-out-dishes");
+    const averagePriceElement = document.getElementById("average-price");
+
+    const totalDishes = dishes.length;
+
+    const availableDishes = dishes.filter(function (dish) {
+        return dish.available;
+    }).length;
+
+    const soldOutDishes = dishes.filter(function (dish) {
+        return !dish.available;
+    }).length;
+
+    let averagePrice = 0;
+
+    if (dishes.length > 0) {
+        const totalPrice = dishes.reduce(function (sum, dish) {
+            return sum + dish.price;
+        }, 0);
+
+        averagePrice = totalPrice / dishes.length;
+    }
+
+    totalDishesElement.textContent = totalDishes;
+    availableDishesElement.textContent = availableDishes;
+    soldOutDishesElement.textContent = soldOutDishes;
+
+    averagePriceElement.textContent = averagePrice.toLocaleString("de-DE", {
+        style: "currency",
+        currency: "EUR"
+    });
+}
+
+
+// ======================================================
+// Formular: Gericht hinzufügen / bearbeiten
+// ======================================================
 
 dishForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -81,9 +118,15 @@ dishForm.addEventListener("submit", function (event) {
         saveDishes();
     }
 
-    renderDishes();
     dishForm.reset();
+
+    renderDishes();
 });
+
+
+// ======================================================
+// Speisekarte rendern
+// ======================================================
 
 function renderDishes() {
     dishList.innerHTML = "";
@@ -91,45 +134,54 @@ function renderDishes() {
     const searchTerm = dishSearchInput.value.toLowerCase();
     const selectedCategory = categoryFilter.value;
     const selectedStatus = statusFilter.value;
-const selectedSort = sortDishes.value;
+    const selectedSort = sortDishes.value;
 
-let filteredDishes = dishes.filter(function (dish) {
-    const matchesSearch = dish.name
-        .toLowerCase()
-        .includes(searchTerm);
+    let filteredDishes = dishes.filter(function (dish) {
+        const matchesSearch = dish.name
+            .toLowerCase()
+            .includes(searchTerm);
 
-    const matchesCategory =
-        selectedCategory === "Alle" ||
-        dish.category === selectedCategory;
+        const matchesCategory =
+            selectedCategory === "Alle" ||
+            dish.category === selectedCategory;
 
-    const matchesStatus =
-        selectedStatus === "Alle" ||
-        (selectedStatus === "Verfügbar" && dish.available) ||
-        (selectedStatus === "Ausverkauft" && !dish.available);
+        const matchesStatus =
+            selectedStatus === "Alle" ||
+            (selectedStatus === "Verfügbar" && dish.available) ||
+            (selectedStatus === "Ausverkauft" && !dish.available);
 
-    return matchesSearch && matchesCategory && matchesStatus;
-});
+        return matchesSearch && matchesCategory && matchesStatus;
+    });
 
-filteredDishes.sort(function (a, b) {
 
-    if (selectedSort === "name-asc") {
-        return a.name.localeCompare(b.name, "de");
-    }
+    // --------------------------------------------------
+    // Sortierung
+    // --------------------------------------------------
 
-    if (selectedSort === "name-desc") {
-        return b.name.localeCompare(a.name, "de");
-    }
+    filteredDishes.sort(function (a, b) {
+        if (selectedSort === "name-asc") {
+            return a.name.localeCompare(b.name, "de");
+        }
 
-    if (selectedSort === "price-asc") {
-        return a.price - b.price;
-    }
+        if (selectedSort === "name-desc") {
+            return b.name.localeCompare(a.name, "de");
+        }
 
-    if (selectedSort === "price-desc") {
-        return b.price - a.price;
-    }
+        if (selectedSort === "price-asc") {
+            return a.price - b.price;
+        }
 
-    return 0;
-});
+        if (selectedSort === "price-desc") {
+            return b.price - a.price;
+        }
+
+        return 0;
+    });
+
+
+    // --------------------------------------------------
+    // Gerichtskarten erstellen
+    // --------------------------------------------------
 
     filteredDishes.forEach(function (dish) {
         const dishCard = document.createElement("div");
@@ -139,6 +191,7 @@ filteredDishes.sort(function (a, b) {
         dishCard.innerHTML = `
             <div>
                 <h3>${dish.name}</h3>
+
                 <p>${dish.category}</p>
 
                 <span class="dish-status ${dish.available ? "available" : "sold-out"}">
@@ -184,7 +237,14 @@ filteredDishes.sort(function (a, b) {
 
         dishList.appendChild(dishCard);
     });
+
+    updateDashboard();
 }
+
+
+// ======================================================
+// Buttons in der Gerichtsliste
+// ======================================================
 
 dishList.addEventListener("click", function (event) {
     const button = event.target;
@@ -208,21 +268,31 @@ dishList.addEventListener("click", function (event) {
     }
 });
 
+
+// ======================================================
+// Suche und Filter
+// ======================================================
+
 dishSearchInput.addEventListener("input", function () {
-        renderDishes();
-    });
+    renderDishes();
+});
 
-    categoryFilter.addEventListener("change", function () {
-        renderDishes();
-    });
+categoryFilter.addEventListener("change", function () {
+    renderDishes();
+});
 
-    statusFilter.addEventListener("change", function () {
+statusFilter.addEventListener("change", function () {
     renderDishes();
 });
 
 sortDishes.addEventListener("change", function () {
     renderDishes();
 });
+
+
+// ======================================================
+// Gericht löschen
+// ======================================================
 
 function deleteDish(id) {
     const dishIndex = dishes.findIndex(function (dish) {
@@ -238,6 +308,11 @@ function deleteDish(id) {
     renderDishes();
 }
 
+
+// ======================================================
+// Verfügbarkeit ändern
+// ======================================================
+
 function toggleDishAvailability(id) {
     const dish = dishes.find(function (dish) {
         return dish.id === id;
@@ -251,6 +326,11 @@ function toggleDishAvailability(id) {
 
     renderDishes();
 }
+
+
+// ======================================================
+// Gericht bearbeiten
+// ======================================================
 
 function editDish(id) {
     const dish = dishes.find(function (dish) {
@@ -268,11 +348,22 @@ function editDish(id) {
     editingDishId = dish.id;
 
     const submitButton = dishForm.querySelector('button[type="submit"]');
+
     submitButton.textContent = "Änderungen speichern";
 }
+
+
+// ======================================================
+// LocalStorage
+// ======================================================
 
 function saveDishes() {
     localStorage.setItem("dishes", JSON.stringify(dishes));
 }
+
+
+// ======================================================
+// Initialer Start
+// ======================================================
 
 renderDishes();
