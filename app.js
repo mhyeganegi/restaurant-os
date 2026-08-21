@@ -38,6 +38,10 @@ const dishNameInput = document.getElementById("dish-name");
 const dishPriceInput = document.getElementById("dish-price");
 const dishCategoryInput = document.getElementById("dish-category");
 const dishList = document.getElementById("dish-list");
+const dishSearchInput = document.getElementById("dish-search");
+const categoryFilter = document.getElementById("category-filter");
+const statusFilter = document.getElementById("status-filter");
+const sortDishes = document.getElementById("sort-dishes");
 
 let dishes = JSON.parse(localStorage.getItem("dishes")) || [];
 let editingDishId = null;
@@ -84,7 +88,50 @@ dishForm.addEventListener("submit", function (event) {
 function renderDishes() {
     dishList.innerHTML = "";
 
-    dishes.forEach(function (dish) {
+    const searchTerm = dishSearchInput.value.toLowerCase();
+    const selectedCategory = categoryFilter.value;
+    const selectedStatus = statusFilter.value;
+const selectedSort = sortDishes.value;
+
+let filteredDishes = dishes.filter(function (dish) {
+    const matchesSearch = dish.name
+        .toLowerCase()
+        .includes(searchTerm);
+
+    const matchesCategory =
+        selectedCategory === "Alle" ||
+        dish.category === selectedCategory;
+
+    const matchesStatus =
+        selectedStatus === "Alle" ||
+        (selectedStatus === "Verfügbar" && dish.available) ||
+        (selectedStatus === "Ausverkauft" && !dish.available);
+
+    return matchesSearch && matchesCategory && matchesStatus;
+});
+
+filteredDishes.sort(function (a, b) {
+
+    if (selectedSort === "name-asc") {
+        return a.name.localeCompare(b.name, "de");
+    }
+
+    if (selectedSort === "name-desc") {
+        return b.name.localeCompare(a.name, "de");
+    }
+
+    if (selectedSort === "price-asc") {
+        return a.price - b.price;
+    }
+
+    if (selectedSort === "price-desc") {
+        return b.price - a.price;
+    }
+
+    return 0;
+});
+
+    filteredDishes.forEach(function (dish) {
         const dishCard = document.createElement("div");
 
         dishCard.classList.add("dish-card");
@@ -159,6 +206,22 @@ dishList.addEventListener("click", function (event) {
 
         editDish(id);
     }
+});
+
+dishSearchInput.addEventListener("input", function () {
+        renderDishes();
+    });
+
+    categoryFilter.addEventListener("change", function () {
+        renderDishes();
+    });
+
+    statusFilter.addEventListener("change", function () {
+    renderDishes();
+});
+
+sortDishes.addEventListener("change", function () {
+    renderDishes();
 });
 
 function deleteDish(id) {
