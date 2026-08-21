@@ -41,6 +41,19 @@ const orderList = document.getElementById("order-list");
 const pageTitle = document.getElementById("page-title");
 const newOrderButton = document.getElementById("new-order-button");
 
+const paymentPanel = document.getElementById("payment-panel");
+const paymentTable = document.getElementById("payment-table");
+const paymentSubtotal = document.getElementById("payment-subtotal");
+const paymentMethod = document.getElementById("payment-method");
+const tipSelect = document.getElementById("tip-select");
+const customTipGroup = document.getElementById("custom-tip-group");
+const customTipInput = document.getElementById("custom-tip");
+const paymentTip = document.getElementById("payment-tip");
+const paymentTotal = document.getElementById("payment-total");
+
+const closePaymentButton = document.getElementById("close-payment-button");
+const confirmPaymentButton = document.getElementById("confirm-payment-button");
+
 // ======================================================
 // Daten
 // ======================================================
@@ -49,6 +62,7 @@ let dishes = JSON.parse(localStorage.getItem("dishes")) || [];
 let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
 let editingDishId = null;
+let payingOrderId = null;
 
 // ======================================================
 // Dashboard
@@ -503,12 +517,137 @@ function advanceOrderStatus(id) {
         order.status = "Serviert";
 
     } else if (order.status === "Serviert") {
-        order.status = "Bezahlt";
+        openPayment(order);
+        return;
     }
 
     saveOrders();
     renderOrders();
 }
+
+// ======================================================
+// Bezahlung öffnen
+// ======================================================
+
+function openPayment(order) {
+    payingOrderId = order.id;
+
+    const subtotal = order.price * order.quantity;
+
+    paymentTable.textContent = order.table;
+
+    paymentSubtotal.textContent = subtotal.toLocaleString("de-DE", {
+        style: "currency",
+        currency: "EUR"
+    });
+
+    tipSelect.value = "0";
+    customTipInput.value = "";
+
+    customTipGroup.classList.add("hidden");
+
+    paymentPanel.classList.remove("hidden");
+
+    updatePaymentSummary();
+}
+
+// ======================================================
+// Bezahlung berechnen
+// ======================================================
+
+function updatePaymentSummary() {
+    const order = orders.find(function (order) {
+        return order.id === payingOrderId;
+    });
+
+    if (!order) {
+        return;
+    }
+
+    const subtotal = order.price * order.quantity;
+
+    let tip = 0;
+
+    if (tipSelect.value === "custom") {
+        tip = Number(customTipInput.value) || 0;
+
+    } else {
+        const tipPercentage = Number(tipSelect.value);
+
+        tip = subtotal * (tipPercentage / 100);
+    }
+
+    const total = subtotal + tip;
+
+    paymentTip.textContent = tip.toLocaleString("de-DE", {
+        style: "currency",
+        currency: "EUR"
+    });
+
+    paymentTotal.textContent = total.toLocaleString("de-DE", {
+        style: "currency",
+        currency: "EUR"
+    });
+}
+
+// ======================================================
+// Bezahlung: Events
+// ======================================================
+
+tipSelect.addEventListener("change", function () {
+    if (tipSelect.value === "custom") {
+        customTipGroup.classList.remove("hidden");
+    } else {
+        customTipGroup.classList.add("hidden");
+    }
+
+    updatePaymentSummary();
+});
+
+customTipInput.addEventListener("input", function () {
+    updatePaymentSummary();
+});
+
+closePaymentButton.addEventListener("click", function () {
+    paymentPanel.classList.add("hidden");
+
+    payingOrderId = null;
+});
+
+confirmPaymentButton.addEventListener("click", function () {
+    const order = orders.find(function (order) {
+        return order.id === payingOrderId;
+    });
+
+    if (!order) {
+        return;
+    }
+
+    const subtotal = order.price * order.quantity;
+
+    let tip = 0;
+
+    if (tipSelect.value === "custom") {
+        tip = Number(customTipInput.value) || 0;
+
+    } else {
+        const tipPercentage = Number(tipSelect.value);
+
+        tip = subtotal * (tipPercentage / 100);
+    }
+
+    order.status = "Bezahlt";
+    order.paymentMethod = paymentMethod.value;
+    order.tip = tip;
+    order.totalPaid = subtotal + tip;
+
+    saveOrders();
+    renderOrders();
+
+    paymentPanel.classList.add("hidden");
+
+    payingOrderId = null;
+});
 
 // ======================================================
 // Bestellung stornieren

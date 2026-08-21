@@ -343,3 +343,29 @@ button:hover {
 .cancel-order-button {
     background-color: #b91c1c;
 }
+
+.payment-panel {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payment-header h3 {
+    margin: 0;
+}
+
+.payment-panel .form-group {
+    margin: 15px 0;
+}
+
+#confirm-payment-button {
+    margin-top: 15px;
+}
