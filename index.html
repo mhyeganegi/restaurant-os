@@ -17,12 +17,28 @@
             <h1>RestaurantOS</h1>
 
             <nav>
-                <a href="#">Dashboard</a>
-                <a href="#">Speisekarte</a>
-                <a href="#">Bestellungen</a>
-                <a href="#">Reservierungen</a>
-                <a href="#">Tische</a>
-                <a href="#">Mitarbeiter</a>
+                <a href="#" class="nav-link active" data-view="dashboard-view">
+                    Dashboard
+                </a>
+
+                <a href="#" class="nav-link" data-view="menu-view">
+                    Speisekarte
+                </a>
+                <a href="#" class="nav-link" data-view="orders-view">
+                    Bestellungen
+                </a>
+
+                <a href="#" class="nav-link" data-view="reservations-view">
+                    Reservierungen
+                </a>
+
+                <a href="#" class="nav-link" data-view="tables-view">
+                    Tische
+                </a>
+
+                <a href="#" class="nav-link" data-view="employees-view">
+                    Mitarbeiter
+                </a>
             </nav>
         </aside>
 
@@ -30,7 +46,7 @@
 
             <header class="topbar">
                 <div>
-                    <h2>Dashboard</h2>
+                    <h2 id="page-title">Dashboard</h2>
                     <p id="current-date"></p>
                 </div>
 
@@ -42,10 +58,8 @@
 
             <main>
 
-                <section>
-                    <p>Willkommen bei RestaurantOS.</p>
-
-                    <div class="dashboard-grid">
+                <section id="dashboard-view" class="view">
+                        <p>Willkommen bei RestaurantOS.</p>
 
                         <div class="dashboard-grid">
 
@@ -71,12 +85,12 @@
 
                         </div>
 
-                    </div>
+                        <button id="new-order-button" type="button">
+                            Neue Bestellung
+                        </button>
+                    </section>
 
-                    <button>Neue Bestellung</button>
-                </section>
-
-                <section class="menu-section">
+                <section id="menu-view" class="view hidden menu-section">
 
                     <div class="section-header">
                         <div>
@@ -162,6 +176,72 @@
 
                     <div id="dish-list" class="dish-list"></div>
 
+                </section>
+
+                <section id="orders-view" class="view hidden">
+
+                    <div class="section-header">
+                        <div>
+                            <h2>Bestellungen</h2>
+                            <p>Bestellungen erstellen und verwalten</p>
+                        </div>
+                    </div>
+
+                    <form id="order-form">
+
+                        <div class="form-group">
+                            <label for="order-table">Tisch</label>
+                            <input
+                                type="number"
+                                id="order-table"
+                                min="1"
+                                placeholder="z. B. 5"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="order-dish">Gericht</label>
+
+                            <select id="order-dish" required>
+                                <option value="">Gericht wählen</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="order-quantity">Menge</label>
+                            <input
+                                type="number"
+                                id="order-quantity"
+                                min="1"
+                                value="1"
+                                required
+                            >
+                        </div>
+
+                        <button type="submit">
+                            Bestellung hinzufügen
+                        </button>
+
+                    </form>
+
+                    <div id="order-list" class="order-list"></div>
+
+                </section>
+
+                <section id="reservations-view" class="view hidden">
+                    <h2>Reservierungen</h2>
+                    <p>Reservierungen werden hier verwaltet.</p>
+                </section>
+
+                <section id="tables-view" class="view hidden">
+                    <h2>Tische</h2>
+                    <p>Tische werden hier verwaltet.</p>
+                </section>
+
+                <section id="employees-view" class="view hidden">
+                    <h2>Mitarbeiter</h2>
+                    <p>Mitarbeiter werden hier verwaltet.</p>
                 </section>
 
             </main>

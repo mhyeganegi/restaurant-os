@@ -261,3 +261,85 @@ button:hover {
 .edit-button {
     background-color: #2563eb;
 }
+
+.menu-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.menu-controls input,
+.menu-controls select {
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.menu-controls input {
+    flex: 1;
+}
+
+@media (max-width: 600px) {
+    .menu-controls {
+        flex-direction: column;
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.sidebar nav a.active {
+    background-color: #374151;
+}
+
+#order-form {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr auto;
+    gap: 15px;
+    align-items: end;
+    margin-bottom: 30px;
+}
+
+.order-list {
+    display: grid;
+    gap: 15px;
+}
+
+.order-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 18px;
+
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+    #order-form {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    #order-form {
+        grid-template-columns: 1fr;
+    }
+}
+.order-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.next-status-button {
+    background-color: #2563eb;
+}
+
+.cancel-order-button {
+    background-color: #b91c1c;
+}

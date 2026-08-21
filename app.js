@@ -29,14 +29,26 @@ const categoryFilter = document.getElementById("category-filter");
 const statusFilter = document.getElementById("status-filter");
 const sortDishes = document.getElementById("sort-dishes");
 
+const navLinks = document.querySelectorAll(".nav-link");
+const views = document.querySelectorAll(".view");
+
+const orderForm = document.getElementById("order-form");
+const orderTableInput = document.getElementById("order-table");
+const orderDishSelect = document.getElementById("order-dish");
+const orderQuantityInput = document.getElementById("order-quantity");
+const orderList = document.getElementById("order-list");
+
+const pageTitle = document.getElementById("page-title");
+const newOrderButton = document.getElementById("new-order-button");
 
 // ======================================================
 // Daten
 // ======================================================
 
 let dishes = JSON.parse(localStorage.getItem("dishes")) || [];
-let editingDishId = null;
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
+let editingDishId = null;
 
 // ======================================================
 // Dashboard
@@ -78,6 +90,56 @@ function updateDashboard() {
     });
 }
 
+// ======================================================
+// Navigation zwischen den Views
+// ======================================================
+
+navLinks.forEach(function (link) {
+    link.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        const targetViewId = link.dataset.view;
+
+        showView(targetViewId, link);
+    });
+});
+
+function showView(targetViewId, activeLink = null) {
+    views.forEach(function (view) {
+        view.classList.add("hidden");
+    });
+
+    navLinks.forEach(function (navLink) {
+        navLink.classList.remove("active");
+    });
+
+    const targetView = document.getElementById(targetViewId);
+
+    if (!targetView) {
+        return;
+    }
+
+    targetView.classList.remove("hidden");
+
+    if (activeLink) {
+        activeLink.classList.add("active");
+        pageTitle.textContent = activeLink.textContent.trim();
+    }
+}
+
+// ======================================================
+// Dashboard: Neue Bestellung öffnen
+// ======================================================
+
+newOrderButton.addEventListener("click", function () {
+    const ordersLink = document.querySelector(
+        '.nav-link[data-view="orders-view"]'
+    );
+
+    showView("orders-view", ordersLink);
+
+    orderTableInput.focus();
+});
 
 // ======================================================
 // Formular: Gericht hinzufügen / bearbeiten
@@ -239,6 +301,232 @@ function renderDishes() {
     });
 
     updateDashboard();
+    updateOrderDishOptions();
+}
+
+// ======================================================
+// Bestellungen: Gerichte für Auswahl laden
+// ======================================================
+
+function updateOrderDishOptions() {
+    orderDishSelect.innerHTML = '<option value="">Gericht wählen</option>';
+
+    const availableDishes = dishes.filter(function (dish) {
+        return dish.available;
+    });
+
+    availableDishes.forEach(function (dish) {
+        const option = document.createElement("option");
+
+        option.value = dish.id;
+
+        option.textContent = `${dish.name} - ${dish.price.toLocaleString("de-DE", {
+            style: "currency",
+            currency: "EUR"
+        })}`;
+
+        orderDishSelect.appendChild(option);
+    });
+}
+
+// ======================================================
+// Bestellungen: Neue Bestellung hinzufügen
+// ======================================================
+
+orderForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const dishId = Number(orderDishSelect.value);
+
+    const dish = dishes.find(function (dish) {
+        return dish.id === dishId;
+    });
+
+    if (!dish) {
+        return;
+    }
+
+    const newOrder = {
+        id: Date.now(),
+        table: Number(orderTableInput.value),
+        dishId: dish.id,
+        dishName: dish.name,
+        price: dish.price,
+        quantity: Number(orderQuantityInput.value),
+        status: "Offen"
+    };
+
+    orders.push(newOrder);
+
+    saveOrders();
+    renderOrders();
+
+    orderForm.reset();
+    orderQuantityInput.value = 1;
+});
+
+// ======================================================
+// Bestellungen rendern
+// ======================================================
+
+function renderOrders() {
+    orderList.innerHTML = "";
+
+    orders.forEach(function (order) {
+        const orderCard = document.createElement("div");
+
+        orderCard.classList.add("order-card");
+
+        const total = order.price * order.quantity;
+
+        orderCard.innerHTML = `
+            <div>
+                <h3>Tisch ${order.table}</h3>
+
+                <p>
+                    ${order.quantity} × ${order.dishName}
+                </p>
+
+                <span>
+                    Status: ${order.status}
+                </span>
+            </div>
+
+            <div class="order-actions">
+
+                <strong>
+                    ${total.toLocaleString("de-DE", {
+                        style: "currency",
+                        currency: "EUR"
+                    })}
+                </strong>
+
+                ${
+                    order.status !== "Bezahlt" && order.status !== "Storniert"
+                        ? `
+                            <button
+                                type="button"
+                                class="next-status-button"
+                                data-id="${order.id}"
+                            >
+                                ${getNextStatusLabel(order.status)}
+                            </button>
+                        `
+                        : ""
+                }
+
+                ${
+                    order.status !== "Bezahlt" && order.status !== "Storniert"
+                        ? `
+                            <button
+                                type="button"
+                                class="cancel-order-button"
+                                data-id="${order.id}"
+                            >
+                                Stornieren
+                            </button>
+                        `
+                        : ""
+                }
+
+            </div>
+        `;
+
+        orderList.appendChild(orderCard);
+    });
+}
+
+// ======================================================
+// Bestellungen: Nächsten Status bestimmen
+// ======================================================
+
+function getNextStatusLabel(status) {
+    if (status === "Offen") {
+        return "In Zubereitung";
+    }
+
+    if (status === "In Zubereitung") {
+        return "Fertig";
+    }
+
+    if (status === "Fertig") {
+        return "Serviert";
+    }
+
+    if (status === "Serviert") {
+        return "Bezahlen";
+    }
+
+    return "";
+}
+
+// ======================================================
+// Buttons in der Bestellungsliste
+// ======================================================
+
+orderList.addEventListener("click", function (event) {
+    const button = event.target;
+
+    if (button.classList.contains("next-status-button")) {
+        const id = Number(button.dataset.id);
+
+        advanceOrderStatus(id);
+    }
+
+    if (button.classList.contains("cancel-order-button")) {
+        const id = Number(button.dataset.id);
+
+        cancelOrder(id);
+    }
+});
+
+// ======================================================
+// Bestellstatus ändern
+// ======================================================
+
+function advanceOrderStatus(id) {
+    const order = orders.find(function (order) {
+        return order.id === id;
+    });
+
+    if (!order) {
+        return;
+    }
+
+    if (order.status === "Offen") {
+        order.status = "In Zubereitung";
+
+    } else if (order.status === "In Zubereitung") {
+        order.status = "Fertig";
+
+    } else if (order.status === "Fertig") {
+        order.status = "Serviert";
+
+    } else if (order.status === "Serviert") {
+        order.status = "Bezahlt";
+    }
+
+    saveOrders();
+    renderOrders();
+}
+
+// ======================================================
+// Bestellung stornieren
+// ======================================================
+
+function cancelOrder(id) {
+    const order = orders.find(function (order) {
+        return order.id === id;
+    });
+
+    if (!order) {
+        return;
+    }
+
+    order.status = "Storniert";
+
+    saveOrders();
+    renderOrders();
 }
 
 
@@ -361,9 +649,13 @@ function saveDishes() {
     localStorage.setItem("dishes", JSON.stringify(dishes));
 }
 
+function saveOrders() {
+    localStorage.setItem("orders", JSON.stringify(orders));
+}
 
 // ======================================================
 // Initialer Start
 // ======================================================
 
 renderDishes();
+renderOrders();
