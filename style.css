@@ -369,3 +369,7 @@ button:hover {
 #confirm-payment-button {
     margin-top: 15px;
 }
+
+.receipt-button {
+    background-color: #059669;
+}

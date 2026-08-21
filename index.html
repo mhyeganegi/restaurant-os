@@ -181,130 +181,130 @@
                 <section id="orders-view" class="view hidden">
 
                     <div class="section-header">
-                        <div>
-                            <h2>Bestellungen</h2>
-                            <p>Bestellungen erstellen und verwalten</p>
+                            <div>
+                                <h2>Bestellungen</h2>
+                                <p>Bestellungen erstellen und verwalten</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <form id="order-form">
+                        <form id="order-form">
 
-                        <div class="form-group">
-                            <label for="order-table">Tisch</label>
-                            <input
-                                type="number"
-                                id="order-table"
-                                min="1"
-                                placeholder="z. B. 5"
-                                required
+                            <div class="form-group">
+                                <label for="order-table">Tisch</label>
+                                <input
+                                    type="number"
+                                    id="order-table"
+                                    min="1"
+                                    placeholder="z. B. 5"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="order-dish">Gericht</label>
+
+                                <select id="order-dish" required>
+                                    <option value="">Gericht wählen</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="order-quantity">Menge</label>
+                                <input
+                                    type="number"
+                                    id="order-quantity"
+                                    min="1"
+                                    value="1"
+                                    required
+                                >
+                            </div>
+
+                            <button type="submit">
+                                Bestellung hinzufügen
+                            </button>
+
+                        </form>
+
+                        <div id="order-list" class="order-list"></div>
+
+                        <div id="payment-panel" class="payment-panel hidden">
+
+                            <div class="payment-header">
+                                <h3>Bezahlung</h3>
+
+                                <button
+                                    type="button"
+                                    id="close-payment-button"
+                                >
+                                    Schließen
+                                </button>
+                            </div>
+
+                            <p>
+                                Tisch:
+                                <strong id="payment-table">-</strong>
+                            </p>
+
+                            <p>
+                                Zwischensumme:
+                                <strong id="payment-subtotal">0,00 €</strong>
+                            </p>
+
+                            <div class="form-group">
+                                <label for="payment-method">Zahlungsart</label>
+
+                                <select id="payment-method">
+                                    <option value="Bar">Bar</option>
+                                    <option value="Karte">Karte</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tip-select">Trinkgeld</label>
+
+                                <select id="tip-select">
+                                    <option value="0">Kein Trinkgeld</option>
+                                    <option value="5">5 %</option>
+                                    <option value="10">10 %</option>
+                                    <option value="15">15 %</option>
+                                    <option value="custom">Freier Betrag</option>
+                                </select>
+                            </div>
+
+                            <div
+                                id="custom-tip-group"
+                                class="form-group hidden"
                             >
-                        </div>
+                                <label for="custom-tip">Trinkgeldbetrag</label>
 
-                        <div class="form-group">
-                            <label for="order-dish">Gericht</label>
+                                <input
+                                    type="number"
+                                    id="custom-tip"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="z. B. 5.00"
+                                >
+                            </div>
 
-                            <select id="order-dish" required>
-                                <option value="">Gericht wählen</option>
-                            </select>
-                        </div>
+                            <p>
+                                Trinkgeld:
+                                <strong id="payment-tip">0,00 €</strong>
+                            </p>
 
-                        <div class="form-group">
-                            <label for="order-quantity">Menge</label>
-                            <input
-                                type="number"
-                                id="order-quantity"
-                                min="1"
-                                value="1"
-                                required
+                            <p>
+                                Gesamt:
+                                <strong id="payment-total">0,00 €</strong>
+                            </p>
+
+                            <button
+                                type="button"
+                                id="confirm-payment-button"
                             >
+                                Zahlung bestätigen
+                            </button>
+
                         </div>
-
-                        <button type="submit">
-                            Bestellung hinzufügen
-                        </button>
-
-                    </form>
-
-                    <div id="order-list" class="order-list"></div>
-
-                    <div id="payment-panel" class="payment-panel hidden">
-
-                    <div class="payment-header">
-                        <h3>Bezahlung</h3>
-
-                        <button
-                            type="button"
-                            id="close-payment-button"
-                        >
-                            Schließen
-                        </button>
-                    </div>
-
-                    <p>
-                        Tisch:
-                        <strong id="payment-table">-</strong>
-                    </p>
-
-                    <p>
-                        Zwischensumme:
-                        <strong id="payment-subtotal">0,00 €</strong>
-                    </p>
-
-                    <div class="form-group">
-                        <label for="payment-method">Zahlungsart</label>
-
-                        <select id="payment-method">
-                            <option value="Bar">Bar</option>
-                            <option value="Karte">Karte</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tip-select">Trinkgeld</label>
-
-                        <select id="tip-select">
-                            <option value="0">Kein Trinkgeld</option>
-                            <option value="5">5 %</option>
-                            <option value="10">10 %</option>
-                            <option value="15">15 %</option>
-                            <option value="custom">Freier Betrag</option>
-                        </select>
-                    </div>
-
-                    <div
-                        id="custom-tip-group"
-                        class="form-group hidden"
-                    >
-                        <label for="custom-tip">Trinkgeldbetrag</label>
-
-                        <input
-                            type="number"
-                            id="custom-tip"
-                            min="0"
-                            step="0.01"
-                            placeholder="z. B. 5.00"
-                        >
-                    </div>
-
-                    <p>
-                        Trinkgeld:
-                        <strong id="payment-tip">0,00 €</strong>
-                    </p>
-
-                    <p>
-                        Gesamt:
-                        <strong id="payment-total">0,00 €</strong>
-                    </p>
-
-                    <button
-                        type="button"
-                        id="confirm-payment-button"
-                    >
-                        Zahlung bestätigen
-                    </button>
-
-                </div>
-
+                    </div>        
                 </section>
 
                 <section id="reservations-view" class="view hidden">

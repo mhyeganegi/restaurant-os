@@ -17,6 +17,7 @@ currentDate.textContent = today.toLocaleDateString("de-DE", {
 // DOM-Elemente
 // ======================================================
 
+// Speisekarte
 const dishForm = document.getElementById("dish-form");
 const dishNameInput = document.getElementById("dish-name");
 const dishPriceInput = document.getElementById("dish-price");
@@ -29,30 +30,41 @@ const categoryFilter = document.getElementById("category-filter");
 const statusFilter = document.getElementById("status-filter");
 const sortDishes = document.getElementById("sort-dishes");
 
+
+// Navigation
 const navLinks = document.querySelectorAll(".nav-link");
 const views = document.querySelectorAll(".view");
 
+const pageTitle = document.getElementById("page-title");
+const newOrderButton = document.getElementById("new-order-button");
+
+
+// Bestellungen
 const orderForm = document.getElementById("order-form");
 const orderTableInput = document.getElementById("order-table");
 const orderDishSelect = document.getElementById("order-dish");
 const orderQuantityInput = document.getElementById("order-quantity");
 const orderList = document.getElementById("order-list");
 
-const pageTitle = document.getElementById("page-title");
-const newOrderButton = document.getElementById("new-order-button");
 
+// Bezahlung
 const paymentPanel = document.getElementById("payment-panel");
 const paymentTable = document.getElementById("payment-table");
 const paymentSubtotal = document.getElementById("payment-subtotal");
 const paymentMethod = document.getElementById("payment-method");
+
 const tipSelect = document.getElementById("tip-select");
 const customTipGroup = document.getElementById("custom-tip-group");
 const customTipInput = document.getElementById("custom-tip");
+
 const paymentTip = document.getElementById("payment-tip");
 const paymentTotal = document.getElementById("payment-total");
 
 const closePaymentButton = document.getElementById("close-payment-button");
-const confirmPaymentButton = document.getElementById("confirm-payment-button");
+const confirmPaymentButton = document.getElementById(
+    "confirm-payment-button"
+);
+
 
 // ======================================================
 // Daten
@@ -64,15 +76,19 @@ let orders = JSON.parse(localStorage.getItem("orders")) || [];
 let editingDishId = null;
 let payingOrderId = null;
 
+
 // ======================================================
 // Dashboard
 // ======================================================
 
 function updateDashboard() {
     const totalDishesElement = document.getElementById("total-dishes");
-    const availableDishesElement = document.getElementById("available-dishes");
-    const soldOutDishesElement = document.getElementById("sold-out-dishes");
-    const averagePriceElement = document.getElementById("average-price");
+    const availableDishesElement =
+        document.getElementById("available-dishes");
+    const soldOutDishesElement =
+        document.getElementById("sold-out-dishes");
+    const averagePriceElement =
+        document.getElementById("average-price");
 
     const totalDishes = dishes.length;
 
@@ -98,11 +114,15 @@ function updateDashboard() {
     availableDishesElement.textContent = availableDishes;
     soldOutDishesElement.textContent = soldOutDishes;
 
-    averagePriceElement.textContent = averagePrice.toLocaleString("de-DE", {
-        style: "currency",
-        currency: "EUR"
-    });
+    averagePriceElement.textContent = averagePrice.toLocaleString(
+        "de-DE",
+        {
+            style: "currency",
+            currency: "EUR"
+        }
+    );
 }
+
 
 // ======================================================
 // Navigation zwischen den Views
@@ -117,6 +137,7 @@ navLinks.forEach(function (link) {
         showView(targetViewId, link);
     });
 });
+
 
 function showView(targetViewId, activeLink = null) {
     views.forEach(function (view) {
@@ -141,6 +162,7 @@ function showView(targetViewId, activeLink = null) {
     }
 }
 
+
 // ======================================================
 // Dashboard: Neue Bestellung öffnen
 // ======================================================
@@ -154,6 +176,7 @@ newOrderButton.addEventListener("click", function () {
 
     orderTableInput.focus();
 });
+
 
 // ======================================================
 // Formular: Gericht hinzufügen / bearbeiten
@@ -177,7 +200,10 @@ dishForm.addEventListener("submit", function (event) {
 
         editingDishId = null;
 
-        const submitButton = dishForm.querySelector('button[type="submit"]');
+        const submitButton = dishForm.querySelector(
+            'button[type="submit"]'
+        );
+
         submitButton.textContent = "Gericht hinzufügen";
 
     } else {
@@ -207,10 +233,18 @@ dishForm.addEventListener("submit", function (event) {
 function renderDishes() {
     dishList.innerHTML = "";
 
-    const searchTerm = dishSearchInput.value.toLowerCase();
+    const searchTerm = dishSearchInput.value
+        .trim()
+        .toLowerCase();
+
     const selectedCategory = categoryFilter.value;
     const selectedStatus = statusFilter.value;
     const selectedSort = sortDishes.value;
+
+
+    // --------------------------------------------------
+    // Filterung
+    // --------------------------------------------------
 
     let filteredDishes = dishes.filter(function (dish) {
         const matchesSearch = dish.name
@@ -223,10 +257,20 @@ function renderDishes() {
 
         const matchesStatus =
             selectedStatus === "Alle" ||
-            (selectedStatus === "Verfügbar" && dish.available) ||
-            (selectedStatus === "Ausverkauft" && !dish.available);
+            (
+                selectedStatus === "Verfügbar" &&
+                dish.available
+            ) ||
+            (
+                selectedStatus === "Ausverkauft" &&
+                !dish.available
+            );
 
-        return matchesSearch && matchesCategory && matchesStatus;
+        return (
+            matchesSearch &&
+            matchesCategory &&
+            matchesStatus
+        );
     });
 
 
@@ -270,8 +314,18 @@ function renderDishes() {
 
                 <p>${dish.category}</p>
 
-                <span class="dish-status ${dish.available ? "available" : "sold-out"}">
-                    ${dish.available ? "Verfügbar" : "Ausverkauft"}
+                <span
+                    class="dish-status ${
+                        dish.available
+                            ? "available"
+                            : "sold-out"
+                    }"
+                >
+                    ${
+                        dish.available
+                            ? "Verfügbar"
+                            : "Ausverkauft"
+                    }
                 </span>
             </div>
 
@@ -289,7 +343,11 @@ function renderDishes() {
                     class="status-button"
                     data-id="${dish.id}"
                 >
-                    ${dish.available ? "Ausverkauft" : "Verfügbar"}
+                    ${
+                        dish.available
+                            ? "Ausverkauft"
+                            : "Verfügbar"
+                    }
                 </button>
 
                 <button
@@ -318,12 +376,14 @@ function renderDishes() {
     updateOrderDishOptions();
 }
 
+
 // ======================================================
 // Bestellungen: Gerichte für Auswahl laden
 // ======================================================
 
 function updateOrderDishOptions() {
-    orderDishSelect.innerHTML = '<option value="">Gericht wählen</option>';
+    orderDishSelect.innerHTML =
+        '<option value="">Gericht wählen</option>';
 
     const availableDishes = dishes.filter(function (dish) {
         return dish.available;
@@ -334,14 +394,19 @@ function updateOrderDishOptions() {
 
         option.value = dish.id;
 
-        option.textContent = `${dish.name} - ${dish.price.toLocaleString("de-DE", {
-            style: "currency",
-            currency: "EUR"
-        })}`;
+        option.textContent =
+            `${dish.name} - ${dish.price.toLocaleString(
+                "de-DE",
+                {
+                    style: "currency",
+                    currency: "EUR"
+                }
+            )}`;
 
         orderDishSelect.appendChild(option);
     });
 }
+
 
 // ======================================================
 // Bestellungen: Neue Bestellung hinzufügen
@@ -376,8 +441,10 @@ orderForm.addEventListener("submit", function (event) {
     renderOrders();
 
     orderForm.reset();
+
     orderQuantityInput.value = 1;
 });
+
 
 // ======================================================
 // Bestellungen rendern
@@ -391,10 +458,20 @@ function renderOrders() {
 
         orderCard.classList.add("order-card");
 
-        const total = order.price * order.quantity;
+        const subtotal = order.price * order.quantity;
+
+        // Alte Bestellungen können diese Werte noch nicht besitzen.
+        const storedTip = order.tip ?? 0;
+        const storedTotalPaid =
+            order.totalPaid ?? subtotal;
+
+        const storedPaymentMethod =
+            order.paymentMethod || "Nicht angegeben";
+
 
         orderCard.innerHTML = `
-            <div>
+            <div class="order-info">
+
                 <h3>Tisch ${order.table}</h3>
 
                 <p>
@@ -404,19 +481,74 @@ function renderOrders() {
                 <span>
                     Status: ${order.status}
                 </span>
+
+                ${
+                    order.status === "Bezahlt"
+                        ? `
+                            <div class="payment-details">
+
+                                <p>
+                                    Zahlungsart:
+                                    ${storedPaymentMethod}
+                                </p>
+
+                                <p>
+                                    Trinkgeld:
+                                    ${storedTip.toLocaleString(
+                                        "de-DE",
+                                        {
+                                            style: "currency",
+                                            currency: "EUR"
+                                        }
+                                    )}
+                                </p>
+
+                                <p>
+                                    Bezahlt:
+                                    ${storedTotalPaid.toLocaleString(
+                                        "de-DE",
+                                        {
+                                            style: "currency",
+                                            currency: "EUR"
+                                        }
+                                    )}
+                                </p>
+
+                            </div>
+                        `
+                        : ""
+                }
+
             </div>
 
             <div class="order-actions">
 
                 <strong>
-                    ${total.toLocaleString("de-DE", {
+                    ${subtotal.toLocaleString("de-DE", {
                         style: "currency",
                         currency: "EUR"
                     })}
                 </strong>
 
+
                 ${
-                    order.status !== "Bezahlt" && order.status !== "Storniert"
+                    order.status === "Bezahlt"
+                        ? `
+                            <button
+                                type="button"
+                                class="receipt-button"
+                                data-id="${order.id}"
+                            >
+                                Rechnung
+                            </button>
+                        `
+                        : ""
+                }
+
+
+                ${
+                    order.status !== "Bezahlt" &&
+                    order.status !== "Storniert"
                         ? `
                             <button
                                 type="button"
@@ -429,8 +561,10 @@ function renderOrders() {
                         : ""
                 }
 
+
                 ${
-                    order.status !== "Bezahlt" && order.status !== "Storniert"
+                    order.status !== "Bezahlt" &&
+                    order.status !== "Storniert"
                         ? `
                             <button
                                 type="button"
@@ -449,6 +583,7 @@ function renderOrders() {
         orderList.appendChild(orderCard);
     });
 }
+
 
 // ======================================================
 // Bestellungen: Nächsten Status bestimmen
@@ -474,6 +609,7 @@ function getNextStatusLabel(status) {
     return "";
 }
 
+
 // ======================================================
 // Buttons in der Bestellungsliste
 // ======================================================
@@ -492,7 +628,54 @@ orderList.addEventListener("click", function (event) {
 
         cancelOrder(id);
     }
+
+    if (button.classList.contains("receipt-button")) {
+        const id = Number(button.dataset.id);
+
+        showReceipt(id);
+    }
 });
+
+
+// ======================================================
+// Rechnung anzeigen
+// ======================================================
+
+function showReceipt(id) {
+    const order = orders.find(function (order) {
+        return order.id === id;
+    });
+
+    if (!order || order.status !== "Bezahlt") {
+        return;
+    }
+
+    const subtotal = order.price * order.quantity;
+
+    const tip = order.tip ?? 0;
+
+    const totalPaid =
+        order.totalPaid ?? subtotal;
+
+    const selectedPaymentMethod =
+        order.paymentMethod || "Nicht angegeben";
+
+    alert(
+        `RestaurantOS Rechnung
+
+Tisch: ${order.table}
+
+Gericht:
+${order.quantity} × ${order.dishName}
+
+Zwischensumme: ${subtotal.toFixed(2)} €
+Trinkgeld: ${tip.toFixed(2)} €
+Gesamt: ${totalPaid.toFixed(2)} €
+
+Zahlungsart: ${selectedPaymentMethod}`
+    );
+}
+
 
 // ======================================================
 // Bestellstatus ändern
@@ -518,12 +701,34 @@ function advanceOrderStatus(id) {
 
     } else if (order.status === "Serviert") {
         openPayment(order);
+
         return;
     }
 
     saveOrders();
     renderOrders();
 }
+
+
+// ======================================================
+// Bestellung stornieren
+// ======================================================
+
+function cancelOrder(id) {
+    const order = orders.find(function (order) {
+        return order.id === id;
+    });
+
+    if (!order) {
+        return;
+    }
+
+    order.status = "Storniert";
+
+    saveOrders();
+    renderOrders();
+}
+
 
 // ======================================================
 // Bezahlung öffnen
@@ -536,10 +741,13 @@ function openPayment(order) {
 
     paymentTable.textContent = order.table;
 
-    paymentSubtotal.textContent = subtotal.toLocaleString("de-DE", {
-        style: "currency",
-        currency: "EUR"
-    });
+    paymentSubtotal.textContent =
+        subtotal.toLocaleString("de-DE", {
+            style: "currency",
+            currency: "EUR"
+        });
+
+    paymentMethod.value = "Bar";
 
     tipSelect.value = "0";
     customTipInput.value = "";
@@ -550,6 +758,7 @@ function openPayment(order) {
 
     updatePaymentSummary();
 }
+
 
 // ======================================================
 // Bezahlung berechnen
@@ -579,16 +788,19 @@ function updatePaymentSummary() {
 
     const total = subtotal + tip;
 
-    paymentTip.textContent = tip.toLocaleString("de-DE", {
-        style: "currency",
-        currency: "EUR"
-    });
+    paymentTip.textContent =
+        tip.toLocaleString("de-DE", {
+            style: "currency",
+            currency: "EUR"
+        });
 
-    paymentTotal.textContent = total.toLocaleString("de-DE", {
-        style: "currency",
-        currency: "EUR"
-    });
+    paymentTotal.textContent =
+        total.toLocaleString("de-DE", {
+            style: "currency",
+            currency: "EUR"
+        });
 }
+
 
 // ======================================================
 // Bezahlung: Events
@@ -597,6 +809,8 @@ function updatePaymentSummary() {
 tipSelect.addEventListener("change", function () {
     if (tipSelect.value === "custom") {
         customTipGroup.classList.remove("hidden");
+        customTipInput.focus();
+
     } else {
         customTipGroup.classList.add("hidden");
     }
@@ -604,15 +818,18 @@ tipSelect.addEventListener("change", function () {
     updatePaymentSummary();
 });
 
+
 customTipInput.addEventListener("input", function () {
     updatePaymentSummary();
 });
+
 
 closePaymentButton.addEventListener("click", function () {
     paymentPanel.classList.add("hidden");
 
     payingOrderId = null;
 });
+
 
 confirmPaymentButton.addEventListener("click", function () {
     const order = orders.find(function (order) {
@@ -648,25 +865,6 @@ confirmPaymentButton.addEventListener("click", function () {
 
     payingOrderId = null;
 });
-
-// ======================================================
-// Bestellung stornieren
-// ======================================================
-
-function cancelOrder(id) {
-    const order = orders.find(function (order) {
-        return order.id === id;
-    });
-
-    if (!order) {
-        return;
-    }
-
-    order.status = "Storniert";
-
-    saveOrders();
-    renderOrders();
-}
 
 
 // ======================================================
@@ -704,13 +902,16 @@ dishSearchInput.addEventListener("input", function () {
     renderDishes();
 });
 
+
 categoryFilter.addEventListener("change", function () {
     renderDishes();
 });
 
+
 statusFilter.addEventListener("change", function () {
     renderDishes();
 });
+
 
 sortDishes.addEventListener("change", function () {
     renderDishes();
@@ -774,7 +975,9 @@ function editDish(id) {
 
     editingDishId = dish.id;
 
-    const submitButton = dishForm.querySelector('button[type="submit"]');
+    const submitButton = dishForm.querySelector(
+        'button[type="submit"]'
+    );
 
     submitButton.textContent = "Änderungen speichern";
 }
@@ -785,16 +988,25 @@ function editDish(id) {
 // ======================================================
 
 function saveDishes() {
-    localStorage.setItem("dishes", JSON.stringify(dishes));
+    localStorage.setItem(
+        "dishes",
+        JSON.stringify(dishes)
+    );
 }
 
+
 function saveOrders() {
-    localStorage.setItem("orders", JSON.stringify(orders));
+    localStorage.setItem(
+        "orders",
+        JSON.stringify(orders)
+    );
 }
+
 
 // ======================================================
 // Initialer Start
 // ======================================================
 
 renderDishes();
+updateOrderDishOptions();
 renderOrders();
